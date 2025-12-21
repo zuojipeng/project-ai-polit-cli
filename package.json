@@ -1,0 +1,57 @@
+{
+  "name": "ai-pilot",
+  "version": "1.0.0",
+  "description": "CLI tool for scanning frontend projects and generating AI-friendly context documents and task lists",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "ai-pilot": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist",
+    "watch": "rollup -c -w"
+  },
+  "keywords": [
+    "cli",
+    "frontend",
+    "ast",
+    "code-analysis",
+    "ai"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zuojipeng/project-ai-polit-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zuojipeng/project-ai-polit-cli/issues"
+  },
+  "homepage": "https://github.com/zuojipeng/project-ai-polit-cli#readme",
+  "dependencies": {
+    "commander": "^12.1.0",
+    "ts-morph": "^25.0.0",
+    "globby": "^14.0.1",
+    "chalk": "^5.3.0",
+    "fs-extra": "^11.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@types/fs-extra": "^11.0.4",
+    "typescript": "^5.7.2",
+    "tsx": "^4.19.2",
+    "rollup": "^4.9.6",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-json": "^6.1.0",
+    "rollup-plugin-preserve-shebang": "^1.0.1"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
+

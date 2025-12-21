@@ -1,0 +1,48 @@
+# 依赖
+node_modules/
+
+# 构建产物
+dist/
+*.tsbuildinfo
+
+# 日志
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# 测试输出（CLI 生成的文档）
+ai-context/
+AI_READY_TASKS.md
+AI_TASK_CONTEXT.md
+IMPACT_ANALYSIS.md
+AI_DIFF_CONTEXT.md
+
+# 临时文件
+*.tmp
+.cache/
+
+# npm 打包产物
+*.tgz
+package/
+ai-pilot@*/
+
+# 其他
+.npmrc.local
