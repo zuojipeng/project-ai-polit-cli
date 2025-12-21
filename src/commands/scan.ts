@@ -17,6 +17,7 @@ export function createScanCommand(): Command {
     .description('扫描项目结构并生成 AI 友好的上下文文档')
     .option('-p, --path <path>', '项目路径', process.cwd())
     .option('-o, --output <output>', '输出目录', './ai-context')
+    .option('--no-tsconfig', '不使用 tsconfig.json（适用于 monorepo）')
     .action(async (options) => {
       try {
         const projectPath = path.resolve(options.path);

@@ -49,9 +49,20 @@ export class DependencyTracer {
 
   constructor(rootPath: string) {
     this.rootPath = rootPath;
+    const tsConfigPath = path.join(rootPath, 'tsconfig.json');
+    const hasTsConfig = require('fs').existsSync(tsConfigPath);
+    
     this.project = new Project({
-      tsConfigFilePath: path.join(rootPath, 'tsconfig.json'),
+      tsConfigFilePath: hasTsConfig ? tsConfigPath : undefined,
       skipAddingFilesFromTsConfig: true,
+      compilerOptions: hasTsConfig ? undefined : {
+        target: 99, // ESNext
+        module: 99, // ESNext
+        moduleResolution: 2, // Node
+        jsx: 4, // React JSX
+        esModuleInterop: true,
+        skipLibCheck: true,
+      },
     });
   }
 
