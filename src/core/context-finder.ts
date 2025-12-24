@@ -1,5 +1,6 @@
 import { Project, SourceFile, SyntaxKind } from 'ts-morph';
 import path from 'path';
+import fs from 'fs';
 import { FileAnalysis, ProjectMap } from './scanner.js';
 
 /**
@@ -64,7 +65,7 @@ export class ContextFinder {
 
   constructor(private rootPath: string) {
     const tsConfigPath = path.join(rootPath, 'tsconfig.json');
-    const hasTsConfig = require('fs').existsSync(tsConfigPath);
+    const hasTsConfig = fs.existsSync(tsConfigPath);
     
     this.project = new Project({
       tsConfigFilePath: hasTsConfig ? tsConfigPath : undefined,

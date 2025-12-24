@@ -2,7 +2,8 @@ import { Project, SourceFile, SyntaxKind, Node } from 'ts-morph';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
-import fs from 'fs-extra';
+import fs from 'fs';
+import fse from 'fs-extra';
 
 const execAsync = promisify(exec);
 
@@ -62,7 +63,7 @@ export class GitDiffAnalyzer {
   constructor(rootPath: string) {
     this.rootPath = rootPath;
     const tsConfigPath = path.join(rootPath, 'tsconfig.json');
-    const hasTsConfig = require('fs').existsSync(tsConfigPath);
+    const hasTsConfig = fs.existsSync(tsConfigPath);
     
     this.project = new Project({
       tsConfigFilePath: hasTsConfig ? tsConfigPath : undefined,
@@ -256,7 +257,7 @@ export class GitDiffAnalyzer {
    * 定位受影响的代码块
    */
   private async locateAffectedBlocks(filePath: string, changedLines: ChangedLine[]): Promise<CodeBlock[]> {
-    if (!await fs.pathExists(filePath)) {
+    if (!await fse.pathExists(filePath)) {
       return [];
     }
 

@@ -1,0 +1,46 @@
+# AI Pilot 忽略规则
+# 类似 .gitignore 语法
+
+# 依赖目录
+**/node_modules/**
+**/bower_components/**
+
+# 构建产物
+**/dist/**
+**/build/**
+**/out/**
+**/.next/**
+**/.nuxt/**
+**/coverage/**
+
+# 测试文件
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+**/__tests__/**
+**/__mocks__/**
+
+# 类型声明
+**/*.d.ts
+
+# 压缩文件
+**/*.min.js
+**/*.min.css
+
+# 临时文件
+**/.cache/**
+**/.temp/**
+**/tmp/**
+
+# 版本控制
+**/.git/**
+**/.svn/**
+
+# IDE
+**/.vscode/**
+**/.idea/**
+
+# 日志
+**/*.log
+

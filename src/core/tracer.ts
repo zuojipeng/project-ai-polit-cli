@@ -1,6 +1,7 @@
 import { Project, SourceFile, SyntaxKind } from 'ts-morph';
 import path from 'path';
-import fs from 'fs-extra';
+import fs from 'fs';
+import fse from 'fs-extra';
 
 /**
  * 依赖信息
@@ -50,7 +51,7 @@ export class DependencyTracer {
   constructor(rootPath: string) {
     this.rootPath = rootPath;
     const tsConfigPath = path.join(rootPath, 'tsconfig.json');
-    const hasTsConfig = require('fs').existsSync(tsConfigPath);
+    const hasTsConfig = fs.existsSync(tsConfigPath);
     
     this.project = new Project({
       tsConfigFilePath: hasTsConfig ? tsConfigPath : undefined,
@@ -72,7 +73,7 @@ export class DependencyTracer {
   async analyzeImpact(filePath: string): Promise<ImpactAnalysis> {
     const absolutePath = path.isAbsolute(filePath) ? filePath : path.join(this.rootPath, filePath);
     
-    if (!await fs.pathExists(absolutePath)) {
+    if (!await fse.pathExists(absolutePath)) {
       throw new Error(`文件不存在: ${filePath}`);
     }
 

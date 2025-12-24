@@ -1,6 +1,7 @@
 import { Project, SourceFile, SyntaxKind, Node } from 'ts-morph';
 import { globby } from 'globby';
 import path from 'path';
+import fs from 'fs';
 
 /**
  * 文件角色类型
@@ -81,7 +82,7 @@ export class ProjectScanner {
 
   constructor(private rootPath: string) {
     const tsConfigPath = path.join(rootPath, 'tsconfig.json');
-    const hasTsConfig = require('fs').existsSync(tsConfigPath);
+    const hasTsConfig = fs.existsSync(tsConfigPath);
     
     this.project = new Project({
       tsConfigFilePath: hasTsConfig ? tsConfigPath : undefined,
@@ -100,14 +101,84 @@ export class ProjectScanner {
   /**
    * 扫描指定模式的文件
    */
-  async scanFiles(patterns: string[] = ['src/**/*.ts', 'src/**/*.tsx', 'src/**/*.js', 'src/**/*.jsx']): Promise<SourceFile[]> {
+  async scanFiles(patterns?: string[]): Promise<SourceFile[]> {
+    // 如果没有指定模式，自动检测项目结构
+    if (!patterns) {
+      patterns = await this.detectProjectStructure();
+    }
+
     const files = await globby(patterns, {
       cwd: this.rootPath,
-      ignore: ['node_modules/**', 'dist/**', 'build/**', '**/*.d.ts', '**/*.spec.*', '**/*.test.*'],
+      ignore: [
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/build/**',
+        '**/.next/**',
+        '**/.nuxt/**',
+        '**/out/**',
+        '**/*.d.ts',
+        '**/*.spec.*',
+        '**/*.test.*',
+        '**/*.min.js',
+        '**/coverage/**',
+        '**/.git/**',
+      ],
       absolute: true,
+      onlyFiles: true,
+      deep: 10, // 限制深度
     });
 
+    // 批量添加文件，避免一次性加载太多
+    console.log(`找到 ${files.length} 个文件，开始解析...`);
+    
+    if (files.length > 5000) {
+      console.warn(`⚠️  文件数量过多 (${files.length})，建议使用 --path 参数聚焦特定目录`);
+    }
+    
     return files.map(filePath => this.project.addSourceFileAtPath(filePath));
+  }
+
+  /**
+   * 自动检测项目结构
+   */
+  private async detectProjectStructure(): Promise<string[]> {
+    const fs = await import('fs');
+    const possiblePatterns = [
+      // Monorepo 结构
+      'apps/*/src/**/*.{ts,tsx,js,jsx}',
+      'packages/*/src/**/*.{ts,tsx,js,jsx}',
+      'apps/**/*.{ts,tsx,js,jsx}',
+      'packages/**/*.{ts,tsx,js,jsx}',
+      // 普通项目结构
+      'src/**/*.{ts,tsx,js,jsx}',
+      // 根目录直接有代码文件
+      '*.{ts,tsx,js,jsx}',
+    ];
+
+    // 检测是否为 monorepo
+    const hasApps = fs.existsSync(path.join(this.rootPath, 'apps'));
+    const hasPackages = fs.existsSync(path.join(this.rootPath, 'packages'));
+    const hasSrc = fs.existsSync(path.join(this.rootPath, 'src'));
+
+    if (hasApps || hasPackages) {
+      // Monorepo 项目
+      const patterns = [];
+      if (hasApps) {
+        patterns.push('apps/*/src/**/*.{ts,tsx,js,jsx}');
+        patterns.push('apps/**/*.{ts,tsx,js,jsx}');
+      }
+      if (hasPackages) {
+        patterns.push('packages/*/src/**/*.{ts,tsx,js,jsx}');
+        patterns.push('packages/**/*.{ts,tsx,js,jsx}');
+      }
+      return patterns;
+    } else if (hasSrc) {
+      // 普通项目
+      return ['src/**/*.{ts,tsx,js,jsx}'];
+    } else {
+      // 根目录查找
+      return ['**/*.{ts,tsx,js,jsx}'];
+    }
   }
 
   /**

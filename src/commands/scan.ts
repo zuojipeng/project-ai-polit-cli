@@ -5,6 +5,7 @@ import fs from 'fs-extra';
 import { ProjectScanner, FileRole } from '../core/scanner.js';
 import { TaskHydrator } from '../core/hydrator.js';
 import { MarkdownGenerator } from '../core/generator.js';
+import { ProductDocGenerator } from '../core/product-doc-generator.js';
 
 /**
  * scan 命令实现
@@ -24,14 +25,18 @@ export function createScanCommand(): Command {
         const outputPath = path.resolve(options.output);
 
         console.log(chalk.blue('🔍 扫描项目...'));
+        console.log(chalk.gray(`📂 ${projectPath}`));
 
         // 初始化扫描器
         const scanner = new ProjectScanner(projectPath);
         const hydrator = new TaskHydrator();
         const generator = new MarkdownGenerator();
+        const productDocGen = new ProductDocGenerator();
 
         // 生成项目地图
         const projectMap = await scanner.generateProjectMap();
+        
+        console.log(chalk.gray(`📊 发现 ${projectMap.totalFiles} 个文件`));
 
         // 提取任务
         const sourceFiles = await scanner.scanFiles();
@@ -58,6 +63,14 @@ export function createScanCommand(): Command {
           { spaces: 2 }
         );
 
+        // 生成产品级文档
+        const productDoc = productDocGen.generateProductDoc(projectMap);
+        await fs.writeFile(
+          path.join(outputPath, 'PRODUCT_OVERVIEW.md'),
+          productDoc,
+          'utf-8'
+        );
+
         // 保存 AI 任务上下文
         if (allAITasks.length > 0) {
           await hydrator.saveAITasks(allAITasks, outputPath);
@@ -79,7 +92,10 @@ export function createScanCommand(): Command {
         );
 
         console.log(chalk.green(`✅ 扫描完成 (${projectMap.totalFiles} 个文件)`));
-        console.log(chalk.gray(`📁 ${outputPath}/project-map.json`));
+        console.log(chalk.gray(`📁 ${outputPath}/`));
+        console.log(chalk.green(`   ⭐ PRODUCT_OVERVIEW.md - 产品级项目文档`));
+        console.log(chalk.gray(`   📊 project-map.json - 项目地图数据`));
+        console.log(chalk.gray(`   📝 PROJECT_CONTEXT.md - 技术文档`));
       } catch (error) {
         console.error(chalk.red('❌ 扫描失败:'), error);
         process.exit(1);
