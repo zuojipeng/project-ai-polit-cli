@@ -67,3 +67,4 @@ A: 可能需要 `sudo npm link`（不推荐），或者配置 npm 全局目录
 ### Q: 想用开发模式快速测试
 A: 使用 `pnpm dev scan` 等命令在 CLI 项目目录内测试
 
+
